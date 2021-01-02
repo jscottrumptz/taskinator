@@ -50,6 +50,7 @@ let createTaskEl = function(taskDataObj) {
 
     // add task id as a custom attribute
     listItemEl.setAttribute("data-task-id", taskIdCounter);
+    listItemEl.setAttribute("draggable","true");
 
     // create div to hold task info and add list item
     let taskInfoEl = document.createElement("div");
@@ -197,6 +198,62 @@ let taskStatusChangeHandler = function(event) {
     }
 };
 
+let dragTaskHandler = function(event) {
+    // get the task id
+    let taskId = event.target.getAttribute("data-task-id");
+    // store the id in the dataTransfer property
+    event.dataTransfer.setData("text/plain", taskId);
+
+    let getId = event.dataTransfer.getData("text/plain");
+    console.log("getId:", getId, typeof getId);
+};
+
+let dropZoneDragHandler = function(event) {
+    // finds any task-list object or any of it's children
+    let taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+      event.preventDefault();
+      taskListEl.setAttribute("style", "background: rgba(68, 233, 255, 0.7); border-style: dashed;");
+    }
+};
+
+let dropTaskHandler = function(event) {
+    let id = event.dataTransfer.getData("text/plain");
+    let draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    let dropZoneEl = event.target.closest(".task-list");
+    let statusType = dropZoneEl.id;
+
+    // set status of task based on dropZone id
+    let statusSelectEl = draggableElement.querySelector("select[name='status-change']");
+    
+    // change dropdown with selected index
+    if (statusType === "tasks-to-do") {
+        statusSelectEl.selectedIndex = 0;
+    } 
+    else if (statusType === "tasks-in-progress") {
+    statusSelectEl.selectedIndex = 1;
+    } 
+    else if (statusType === "tasks-completed") {
+    statusSelectEl.selectedIndex = 2;
+    }
+
+    dropZoneEl.removeAttribute("style");
+
+    // move the li to the appropriate task list
+    dropZoneEl.appendChild(draggableElement);
+};
+
+let dragLeaveHandler = function(event) {
+    let taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+      taskListEl.removeAttribute("style");
+    }
+};
+
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+pageContentEl.addEventListener("dragstart", dragTaskHandler);
+pageContentEl.addEventListener("dragover", dropZoneDragHandler);
+pageContentEl.addEventListener("drop", dropTaskHandler);
+pageContentEl.addEventListener("dragleave", dragLeaveHandler);
