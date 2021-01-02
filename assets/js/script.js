@@ -208,6 +208,7 @@ let dragTaskHandler = function(event) {
     console.log("getId:", getId, typeof getId);
 };
 
+// defines the drop zone area
 let dropZoneDragHandler = function(event) {
     // finds any task-list object or any of it's children
     let taskListEl = event.target.closest(".task-list");
@@ -250,9 +251,16 @@ let dragLeaveHandler = function(event) {
     }
 };
 
+// create new task
 formEl.addEventListener("submit", taskFormHandler);
+
+// for edit and delete buttons
 pageContentEl.addEventListener("click", taskButtonHandler);
+
+// for changing the states dropdown
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+// for dragging
 pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
