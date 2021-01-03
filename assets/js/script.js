@@ -322,6 +322,7 @@ let loadTasks = function() {
         tasks = [];
     }
     
+    // Iterates through a tasks array and creates task elements on the page from it.
     for (let i = 0; i < tasks.length; i++) {
         // reset task ids
         tasks[i].id = taskIdCounter;
@@ -366,8 +367,6 @@ let loadTasks = function() {
     }
 
     console.log(tasks)
-
-    // Iterates through a tasks array and creates task elements on the page from it.
 };
 
 // create new task
