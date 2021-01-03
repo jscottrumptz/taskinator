@@ -212,6 +212,8 @@ let deleteTask = function(taskId) {
 
     // save tasks to localStorage
     saveTasks();
+
+    alert("Task Deleted!");
 };
 
 let taskStatusChangeHandler = function(event) {
