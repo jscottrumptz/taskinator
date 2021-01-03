@@ -71,7 +71,7 @@ let createTaskEl = function(taskDataObj) {
     // add entire list item to list
     tasksToDoEl.appendChild(listItemEl);
 
-    // creat an id tag and push the ne object to the array
+    // creat an id tag and push the new object to the array
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
 
@@ -179,7 +179,7 @@ let completeEditTask = function(taskName, taskType, taskId) {
         tasks[i].name = taskName;
         tasks[i].type = taskType;
         }
-    };
+    }
 
     // save tasks to localStorage
     saveTasks();
@@ -311,7 +311,64 @@ let dragLeaveHandler = function(event) {
 // save data to local storage
 let saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+};
+
+let loadTasks = function() {
+    // Gets task items from localStorage and covert them from a string back to an array.
+    tasks = JSON.parse(localStorage.getItem("tasks"));
+
+    // if there are no locally stored tasks, set up empty array
+    if (!tasks) {
+        tasks = [];
+    }
+    
+    for (let i = 0; i < tasks.length; i++) {
+        // reset task ids
+        tasks[i].id = taskIdCounter;
+
+        // create list item
+        let listItemEl = document.createElement("li");
+        listItemEl.className = "task-item";
+
+        // add task id as a custom attribute
+        listItemEl.setAttribute("data-task-id", tasks[i].id);
+        listItemEl.setAttribute("draggable","true");
+
+        // create div to hold task info and add list item
+        let taskInfoEl = document.createElement("div");
+
+        // give it a class name
+        taskInfoEl.className = "task-info";
+
+        // add HTML content to div
+        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>";
+        listItemEl.appendChild(taskInfoEl);
+
+        // create edit and delete buttions as well as the status dropdown
+        let taskActionsEl = createTaskActions(taskIdCounter);
+        listItemEl.appendChild(taskActionsEl);
+
+        // add entire list item to the propper list
+        if (tasks[i].status === "to do") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 0;
+            tasksToDoEl.appendChild(listItemEl);
+        } 
+        else if (tasks[i].status === "in progress") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 1;
+            tasksInProgressEl.appendChild(listItemEl);
+        } 
+        else if (tasks[i].status === "completed") {
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 2;
+            tasksCompletedEl.appendChild(listItemEl);
+        }
+
+        taskIdCounter++;
+    }
+
+    console.log(tasks)
+
+    // Iterates through a tasks array and creates task elements on the page from it.
+};
 
 // create new task
 formEl.addEventListener("submit", taskFormHandler);
@@ -327,3 +384,5 @@ pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
+
+loadTasks();
